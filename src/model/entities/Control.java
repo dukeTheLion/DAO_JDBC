@@ -50,7 +50,7 @@ public class Control {
         this.daySalary = daySalary;
     }
 
-    public Employee Employee() {
+    public Employee getEmployee() {
         return employee;
     }
 
@@ -65,7 +65,7 @@ public class Control {
                 ", entry=" + entry +
                 ", exit=" + exit +
                 ", daySalary=" + daySalary +
-                ", department=" + employee +
+                ", employee=" + employee +
                 '}';
     }
 }

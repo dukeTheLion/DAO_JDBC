@@ -29,13 +29,18 @@ public class ControlDaoJDBC implements ControlDAO {
 
     }
 
+    /**
+     * Find by ID via Control:
+     * Esta função esta responsável por trazer a lista completa de funcionário, departamento e dias trabalhados.
+     */
     @Override
     public List<Control> findById(Integer id) {
         PreparedStatement st = null;
         ResultSet rs = null;
 
         try {
-            st = conn.prepareStatement("SELECT Employee.*, Department.DepName, Control.Entry, Control.Exit, Control.DaySalary "
+            st = conn.prepareStatement("SELECT Employee.*, "
+                    + "Department.DepName, Control.Entry, Control.Exit, Control.DaySalary "
                     + "FROM DataBase.Employee "
                     + "INNER JOIN DataBase.Department ON Employee.DepartmentID = Department.ID "
                     + "INNER JOIN DataBase.Control ON Employee.ControlID = Control.ID "
@@ -53,29 +58,89 @@ public class ControlDaoJDBC implements ControlDAO {
         }
     }
 
+    /**
+     * Find by Name via Control:
+     * Esta função esta responsável por trazer a lista completa de funcionário, departamento e dias trabalhados.
+     */
     @Override
-    public List<Control> findByName(Integer id) {
-        return null;
+    public List<Control> findByName(String name, String lastName) {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+
+        try {
+            st = conn.prepareStatement("SELECT Employee.*, "
+                    + "Department.DepName, Control.Entry, Control.Exit, Control.DaySalary "
+                    + "FROM DataBase.Employee "
+                    + "INNER JOIN DataBase.Department ON Employee.DepartmentID = Department.ID "
+                    + "INNER JOIN DataBase.Control ON Employee.ControlID = Control.ID "
+                    + "WHERE Employee.Name = ? AND Employee.LastName = ?");
+
+            st.setString(1, name);
+            st.setString(2, lastName);
+            rs = st.executeQuery();
+
+            return instantiateControl(rs);
+        } catch (SQLException e) {
+            throw new DBException(e.getMessage());
+        } finally {
+            DB.closeRs(rs);
+            DB.closeSt(st);
+        }
     }
 
     @Override
-    public List<Control> findAll() {
+    public List<Control> findByDate() {
         return null;
     }
 
     private List<Control> instantiateControl(ResultSet rs) throws SQLException {
         List<Control> list = new ArrayList<>();
 
-        Map<Integer, Employee> Emap = new HashMap<>();
-        Map<Integer, Department> Dmap = new HashMap<>();
+        /*
+        * Maps são usados aqui para fazer com seja possível seguir a seguinte estrutura:
+        *
+        * +----------------+
+        * |    Control.    |
+        * +----------------+
+        * | Id             |
+        * | Entry          |
+        * | .              | -
+        * | .              |  \
+        * | .              |   \
+        * +----------------+    \
+        * +----------------+     \
+        * |    Control.    |      \            +----------------+           +----------------+
+        * +----------------+       \           |    Employee    |           |   Department   |
+        * | Id             |        ------->   +----------------+           +----------------+
+        * | Entry          |                   | Id             |           | Id             |
+        * | .              | -------------->   | Name           | ------->  | DepName        |
+        * | .              |                   | .              |           | .              |
+        * | .              |        ------->   | .              |           | .              |
+        * +----------------+       /           | .              |           | .              |
+        * +----------------+      /            +----------------+           +----------------+
+        * |    Control.    |     /
+        * +----------------+    /
+        * | Id             |   /
+        * | Entry          |  /
+        * | .              | -
+        * | .              |
+        * | .              |
+        * +----------------+
+        * */
 
+        Map<Integer, Employee> E_map = new HashMap<>();
+        Map<Integer, Department> D_map = new HashMap<>();
+
+        // Loop que percorre todas linhas da tabela
         while (rs.next()) {
 
-            Department dep = Dmap.get(rs.getInt("ID"));
-            Employee emp = Emap.get(rs.getInt("ID"));
+            // Verifica a cada ciclo se existe um objeto ja implementado para evitar duplicadas
+            Department dep = D_map.get(rs.getInt("ID"));
+            Employee emp = E_map.get(rs.getInt("ID"));
 
             if (dep == null) {
                 dep = new Department(rs.getInt("DepartmentID"), rs.getString("DepName"));
+                D_map.put(rs.getInt("ID"), dep);
             }
             if (emp == null) {
                 emp = new Employee(rs.getInt("ID"),
@@ -86,8 +151,10 @@ public class ControlDaoJDBC implements ControlDAO {
                         rs.getDouble("SalaryHour"),
                         rs.getInt("WeeklyHour"),
                         dep);
+                E_map.put(rs.getInt("ID"), emp);
             }
 
+            // Cira a lista de 'Control' com vários control aprontando apenas pra um 'Employee' e um 'Department'
             Control control = new Control(rs.getInt("ID"),
                     rs.getDate("Entry"),
                     rs.getDate("Exit"),

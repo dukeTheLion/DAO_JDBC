@@ -4,7 +4,6 @@ import db.DB;
 import model.dao.ControlDAO;
 import model.dao.DepartmentDAO;
 import model.dao.EmployeeDAO;
-import model.entities.Control;
 
 public class DaoFactory {
     public static EmployeeDAO newEmployeeDAO(){
