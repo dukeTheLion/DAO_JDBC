@@ -1,12 +1,19 @@
 package model.dao.impl;
 
 import model.dao.EmployeeDAO;
-import model.entities.Department;
 import model.entities.Employee;
 
+import java.sql.Connection;
 import java.util.List;
 
 public class EmployeeDaoJDBC implements EmployeeDAO {
+
+    private Connection conn;
+
+    public EmployeeDaoJDBC(Connection conn) {
+        this.conn = conn;
+    }
+
     @Override
     public void insert(Employee obj) {
 
@@ -23,17 +30,17 @@ public class EmployeeDaoJDBC implements EmployeeDAO {
     }
 
     @Override
-    public Department findById(Integer id) {
+    public List<Employee> findById(Integer id) {
         return null;
     }
 
     @Override
-    public Department findByName(Integer id) {
+    public List<Employee> findByName(Integer id) {
         return null;
     }
 
     @Override
-    public List<Department> findAll() {
+    public List<Employee> findAll() {
         return null;
     }
 }

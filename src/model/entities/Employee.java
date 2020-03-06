@@ -8,14 +8,14 @@ public class Employee implements Serializable {
     private String name;
     private String lastName;
     private String email;
-    private String CPF;
+    private Long CPF;
     private Double salaryHour;
     private Integer weeklyHour;
 
     private Department department;
 
-    public Employee(Integer id, String name, String lastName, String email, String CPF,
-                    Double salaryHour, Integer weeklyHour, Department department) {
+    public Employee(Integer id, String name, String lastName, String email, Long CPF, Double salaryHour,
+                    Integer weeklyHour, Department department) {
         this.id = id;
         this.name = name;
         this.lastName = lastName;
@@ -24,6 +24,10 @@ public class Employee implements Serializable {
         this.salaryHour = salaryHour;
         this.weeklyHour = weeklyHour;
         this.department = department;
+    }
+
+    public Employee() {
+
     }
 
     public Integer getId() {
@@ -58,11 +62,11 @@ public class Employee implements Serializable {
         this.email = email;
     }
 
-    public String getCPF() {
+    public Long getCPF() {
         return CPF;
     }
 
-    public void setCPF(String CPF) {
+    public void setCPF(Long CPF) {
         this.CPF = CPF;
     }
 
@@ -90,6 +94,7 @@ public class Employee implements Serializable {
         this.department = department;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -110,7 +115,7 @@ public class Employee implements Serializable {
                 ", name='" + name + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
-                ", CPF='" + CPF + '\'' +
+                ", CPF=" + CPF +
                 ", salaryHour=" + salaryHour +
                 ", weeklyHour=" + weeklyHour +
                 ", department=" + department +

@@ -45,7 +45,7 @@ public class DB {
     }
 
     //Fecha o objeto Statement
-    public static void closeStt(Statement st) {
+    public static void closeSt(Statement st) {
         if (st != null) {
             try {
                 st.close();
