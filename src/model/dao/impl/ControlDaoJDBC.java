@@ -6,15 +6,14 @@ import model.dao.ControlDAO;
 import model.entities.Control;
 import model.entities.Department;
 import model.entities.Employee;
+import org.jetbrains.annotations.NotNull;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ControlDaoJDBC implements ControlDAO {
 
@@ -89,8 +88,31 @@ public class ControlDaoJDBC implements ControlDAO {
     }
 
     @Override
-    public List<Control> findByDate() {
-        return null;
+    public List<Control> findByNameYMD(String date, String num, String name) {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+
+        try {
+            st = conn.prepareStatement(sql(date));
+
+            if (date.length() == 2){
+                String[] num2 = num.split("-");
+                st.setString(1, num2[0]);
+                st.setString(2, num2[1]);
+                st.setString(3, name);
+            } else {
+                st.setString(1, num);
+                st.setString(2, name);
+            }
+            rs = st.executeQuery();
+
+            return instantiateControl(rs);
+        } catch (SQLException e) {
+            throw new DBException(e.getMessage());
+        } finally {
+            DB.closeRs(rs);
+            DB.closeSt(st);
+        }
     }
 
     private List<Control> instantiateControl(ResultSet rs) throws SQLException {
@@ -167,4 +189,31 @@ public class ControlDaoJDBC implements ControlDAO {
 
         return list;
     }
+
+    @NotNull
+    private String sql (String date){
+        String std = "SELECT Employee.*, "
+                + "Department.DepName, Control.Entry, Control.Exit, Control.DaySalary "
+                + "FROM DataBase.Employee "
+                + "INNER JOIN DataBase.Department ON Employee.DepartmentID = Department.ID "
+                + "INNER JOIN DataBase.Control ON Employee.ControlID = Control.ID ";
+
+        switch (date) {
+            case "Y":
+                return std + "WHERE YEAR(Control.Entry) = ? AND Employee.Name = ?";
+            case "M":
+                return std + "WHERE MONTH(Control.Entry) = ? AND Employee.Name = ?";
+            case "D":
+                return std + "WHERE DAY(Control.Entry) = ? AND Employee.Name = ?";
+            case "YM":
+                return std + "WHERE YEAR(Control.Entry) = ? AND MONTH(Control.Entry) = ? AND Employee.Name = ?";
+            case "YD":
+                return std + "WHERE YEAR(Control.Entry) = ? AND DAY(Control.Entry) = ? AND Employee.Name = ?";
+            case "MD":
+                return std + "WHERE MONTH(Control.Entry) = ? AND DAY(Control.Entry) = ? AND Employee.Name = ?";
+            default:
+                return std + "WHERE DATE(Control.Entry) = ? AND Employee.Name = ?";
+        }
+    }
+
 }

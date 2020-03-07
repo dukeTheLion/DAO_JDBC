@@ -8,5 +8,5 @@ public interface ControlDAO {
     void update(Control obj);
     List<Control> findById(Integer id);
     List<Control> findByName(String name, String lastName);
-    List<Control> findByDate();
+    List<Control> findByNameYMD(String date, String num, String name);
 }
