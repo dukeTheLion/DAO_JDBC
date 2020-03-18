@@ -3,42 +3,52 @@ package model.entities;
 import java.util.Date;
 
 public class Control {
-    private Integer ID;
-    private Date entry;
-    private Date exit;
+    private Double ID;
+    private String entry;
+    private String exit;
     private Float daySalary;
+    private Integer index;
 
     private Employee employee;
 
-    public Control(Integer ID, Date entry, Date exit, Float daySalary, Employee employee) {
+    public Control(Double ID, String entry, String exit, Float daySalary, Integer index, Employee employee) {
         this.ID = ID;
         this.entry = entry;
         this.exit = exit;
         this.daySalary = daySalary;
+        this.index = index;
         this.employee = employee;
     }
 
-    public Integer getID() {
+    public Control(Double ID, String entry, String exit, Float daySalary, Integer index) {
+        this.ID = ID;
+        this.entry = entry;
+        this.exit = exit;
+        this.daySalary = daySalary;
+        this.index = index;
+    }
+
+    public Double getID() {
         return ID;
     }
 
-    public void setID(Integer ID) {
+    public void setID(Double ID) {
         this.ID = ID;
     }
 
-    public Date getEntry() {
+    public String getEntry() {
         return entry;
     }
 
-    public void setEntry(Date entry) {
+    public void setEntry(String entry) {
         this.entry = entry;
     }
 
-    public Date getExit() {
+    public String getExit() {
         return exit;
     }
 
-    public void setExit(Date exit) {
+    public void setExit(String exit) {
         this.exit = exit;
     }
 
@@ -48,6 +58,14 @@ public class Control {
 
     public void setDaySalary(Float daySalary) {
         this.daySalary = daySalary;
+    }
+
+    public Integer getIndex() {
+        return index;
+    }
+
+    public void setIndex(Integer index) {
+        this.index = index;
     }
 
     public Employee getEmployee() {
@@ -65,6 +83,7 @@ public class Control {
                 ", entry=" + entry +
                 ", exit=" + exit +
                 ", daySalary=" + daySalary +
+                ", index=" + index +
                 ", employee=" + employee +
                 '}';
     }

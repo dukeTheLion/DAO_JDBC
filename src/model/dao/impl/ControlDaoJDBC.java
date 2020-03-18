@@ -8,11 +8,7 @@ import model.entities.Department;
 import model.entities.Employee;
 import org.jetbrains.annotations.NotNull;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.*;
 
 public class ControlDaoJDBC implements ControlDAO {
@@ -24,8 +20,34 @@ public class ControlDaoJDBC implements ControlDAO {
     }
 
     @Override
-    public void update(Control obj) {
+    public void insert(Control obj) {
+        PreparedStatement st = null;
 
+        try {
+            st = conn.prepareStatement("INSERT INTO DataBase.Control (`ID`, `Entry`, `Exit`, `DaySalary`)  "
+                    + "values (?, ?, ?, ?)",
+                    Statement.RETURN_GENERATED_KEYS);
+
+            st.setDouble(1, obj.getID());
+            st.setString(2, obj.getEntry());
+            st.setString(3, obj.getExit());
+            st.setFloat(4, obj.getDaySalary());
+
+            int rows = st.executeUpdate();
+
+            if (rows > 0){
+                ResultSet rs = st.getGeneratedKeys();
+                if (rs.next()){
+                    int id = rs.getInt(1);
+                    obj.setIndex(id);
+                }
+                DB.closeRs(rs);
+            } else throw new DBException("None");
+        } catch (SQLException e) {
+            throw new DBException(e.getMessage());
+        } finally {
+            DB.closeSt(st);
+        }
     }
 
     /**
@@ -39,7 +61,7 @@ public class ControlDaoJDBC implements ControlDAO {
 
         try {
             st = conn.prepareStatement("SELECT Employee.*, "
-                    + "Department.DepName, Control.Entry, Control.Exit, Control.DaySalary "
+                    + "Department.DepName, Control.Entry, Control.Exit, Control.DaySalary, Control.Index "
                     + "FROM DataBase.Employee "
                     + "INNER JOIN DataBase.Department ON Employee.DepartmentID = Department.ID "
                     + "INNER JOIN DataBase.Control ON Employee.ControlID = Control.ID "
@@ -68,7 +90,7 @@ public class ControlDaoJDBC implements ControlDAO {
 
         try {
             st = conn.prepareStatement("SELECT Employee.*, "
-                    + "Department.DepName, Control.Entry, Control.Exit, Control.DaySalary "
+                    + "Department.DepName, Control.Entry, Control.Exit, Control.DaySalary, Control.Index "
                     + "FROM DataBase.Employee "
                     + "INNER JOIN DataBase.Department ON Employee.DepartmentID = Department.ID "
                     + "INNER JOIN DataBase.Control ON Employee.ControlID = Control.ID "
@@ -88,20 +110,20 @@ public class ControlDaoJDBC implements ControlDAO {
     }
 
     @Override
-    public List<Control> findByNameYMD(String date, String num, String name) {
+    public List<Control> findByNameYMD(String type, String date, String name) {
         PreparedStatement st = null;
         ResultSet rs = null;
 
         try {
-            st = conn.prepareStatement(sql(date));
+            st = conn.prepareStatement(sql(type));
 
-            if (date.length() == 2){
-                String[] num2 = num.split("-");
+            if (type.length() == 2){
+                String[] num2 = date.split("-");
                 st.setString(1, num2[0]);
                 st.setString(2, num2[1]);
                 st.setString(3, name);
             } else {
-                st.setString(1, num);
+                st.setString(1, date);
                 st.setString(2, name);
             }
             rs = st.executeQuery();
@@ -114,6 +136,7 @@ public class ControlDaoJDBC implements ControlDAO {
             DB.closeSt(st);
         }
     }
+
 
     private List<Control> instantiateControl(ResultSet rs) throws SQLException {
         List<Control> list = new ArrayList<>();
@@ -177,10 +200,11 @@ public class ControlDaoJDBC implements ControlDAO {
             }
 
             // Cira a lista de 'Control' com vários control aprontando apenas pra um 'Employee' e um 'Department'
-            Control control = new Control(rs.getInt("ID"),
-                    rs.getDate("Entry"),
-                    rs.getDate("Exit"),
+            Control control = new Control(rs.getDouble("ID"),
+                    rs.getString("Entry"),
+                    rs.getString("Exit"),
                     rs.getFloat("DaySalary"),
+                    rs.getInt("Index"),
                     emp);
 
             list.add(control);
@@ -193,7 +217,7 @@ public class ControlDaoJDBC implements ControlDAO {
     @NotNull
     private String sql (String date){
         String std = "SELECT Employee.*, "
-                + "Department.DepName, Control.Entry, Control.Exit, Control.DaySalary "
+                + "Department.DepName, Control.Entry, Control.Exit, Control.DaySalary, Control.Index "
                 + "FROM DataBase.Employee "
                 + "INNER JOIN DataBase.Department ON Employee.DepartmentID = Department.ID "
                 + "INNER JOIN DataBase.Control ON Employee.ControlID = Control.ID ";
