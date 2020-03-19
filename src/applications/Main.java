@@ -14,26 +14,34 @@ public class Main {
     public static void main(String[] args) throws ParseException {
         ControlDAO empDao = DaoFactory.newControlDAO();
 
-        List<Control> emp = empDao.findByName("Bob", "Temm");
+        //List<Control> emp = empDao.findByName("Bob", "Temm");
 
-        System.out.println("=====================1=====================" + "\n" + emp);
+        //System.out.println("=====================1=====================" + "\n" + emp);
 
-        List<Control> emp2 = empDao.findById(3);
+        //List<Control> emp2 = empDao.findById(3);
 
-        System.out.println("=====================2=====================" + "\n" + emp2);
+        //System.out.println("=====================2=====================" + "\n" + emp2);
 
-        List<Control> emp3 = empDao.findByNameYMD("YMD", "2019-2-5", "Bob");
+        //List<Control> emp3 = empDao.findByNameYMD("YMD", "2019-2-5", "Bob");
 
-        System.out.println("=====================3=====================" + "\n" + emp3);
+        //System.out.println("=====================3=====================" + "\n" + emp3);
 
-        Control emp4 = new Control((double)4,
+        //Control emp4 = new Control(3d,
+        //        new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()),
+        //        "0001-01-01 00:00:00",
+        //        4000f);
+
+        //empDao.insert(emp4);
+        //System.out.println("=====================4=====================" + "\n" + emp4.getIndex());
+
+
+        empDao.update(new Control(3d,
                 new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()),
-                "0001-01-01 00:00:00",
-                (float)4000,
-                null);
+                "2020-01-01 11:00:00",
+                6000f));
 
-        empDao.insert(emp4);
-        System.out.println("=====================3=====================" + "\n" + emp4.getIndex());
+        List<Control> emp5 = empDao.findById(3);
+        System.out.println("=====================5=====================" + "\n" + emp5);
     }
 
 }

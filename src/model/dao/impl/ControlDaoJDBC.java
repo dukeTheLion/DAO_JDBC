@@ -50,6 +50,29 @@ public class ControlDaoJDBC implements ControlDAO {
         }
     }
 
+    @Override
+    public void update(Control obj) {
+        PreparedStatement st = null;
+
+        try {
+            st = conn.prepareStatement("UPDATE `DataBase`.`Control` "
+                    + "SET `Exit` = ?, `DaySalary` = ? "
+                    + "WHERE `Control`.`Exit` = '0001-01-01 00:00:00' AND `Control`.`ID` = ?;");
+
+            st.setString(1, obj.getExit());
+            st.setFloat(2, obj.getDaySalary());
+            st.setDouble(3, obj.getID());
+
+            st.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new DBException(e.getMessage());
+        } finally {
+            DB.closeSt(st);
+        }
+
+    }
+
     /**
      * Find by ID via Control:
      * Esta função esta responsável por trazer a lista completa de funcionário, departamento e dias trabalhados.
@@ -136,7 +159,6 @@ public class ControlDaoJDBC implements ControlDAO {
             DB.closeSt(st);
         }
     }
-
 
     private List<Control> instantiateControl(ResultSet rs) throws SQLException {
         List<Control> list = new ArrayList<>();

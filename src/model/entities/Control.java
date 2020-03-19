@@ -20,12 +20,12 @@ public class Control {
         this.employee = employee;
     }
 
-    public Control(Double ID, String entry, String exit, Float daySalary, Integer index) {
+    public Control(Double ID, String entry, String exit, Float daySalary) {
         this.ID = ID;
         this.entry = entry;
         this.exit = exit;
         this.daySalary = daySalary;
-        this.index = index;
+        this.index = null;
     }
 
     public Double getID() {
@@ -78,7 +78,7 @@ public class Control {
 
     @Override
     public String toString() {
-        return "Control{" +
+        return "\nControl{" +
                 "ID=" + ID +
                 ", entry=" + entry +
                 ", exit=" + exit +
