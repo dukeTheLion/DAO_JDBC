@@ -210,19 +210,20 @@ public class ControlDaoJDBC implements ControlDAO {
                 D_map.put(rs.getInt("ID"), dep);
             }
             if (emp == null) {
-                emp = new Employee(rs.getInt("ID"),
+                emp = new Employee(rs.getLong("ID"),
                         rs.getString("Name"),
                         rs.getString("LastName"),
+                        rs.getDouble("CPF"),
                         rs.getString("Email"),
-                        rs.getLong("CPF"),
                         rs.getDouble("SalaryHour"),
                         rs.getInt("WeeklyHour"),
-                        dep);
+                        dep,
+                        rs.getDouble("ControlID"));
                 E_map.put(rs.getInt("ID"), emp);
             }
 
             // Cira a lista de 'Control' com vários control aprontando apenas pra um 'Employee' e um 'Department'
-            Control control = new Control(rs.getDouble("ID"),
+            Control control = new Control(rs.getLong("ID"),
                     rs.getString("Entry"),
                     rs.getString("Exit"),
                     rs.getFloat("DaySalary"),
@@ -237,14 +238,14 @@ public class ControlDaoJDBC implements ControlDAO {
     }
 
     @NotNull
-    private String sql (String date){
+    private String sql (String type){
         String std = "SELECT Employee.*, "
                 + "Department.DepName, Control.Entry, Control.Exit, Control.DaySalary, Control.Index "
                 + "FROM DataBase.Employee "
                 + "INNER JOIN DataBase.Department ON Employee.DepartmentID = Department.ID "
                 + "INNER JOIN DataBase.Control ON Employee.ControlID = Control.ID ";
 
-        switch (date) {
+        switch (type) {
             case "Y":
                 return std + "WHERE YEAR(Control.Entry) = ? AND Employee.Name = ?";
             case "M":

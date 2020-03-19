@@ -3,7 +3,7 @@ package model.entities;
 import java.util.Date;
 
 public class Control {
-    private Double ID;
+    private Long ID;
     private String entry;
     private String exit;
     private Float daySalary;
@@ -11,7 +11,7 @@ public class Control {
 
     private Employee employee;
 
-    public Control(Double ID, String entry, String exit, Float daySalary, Integer index, Employee employee) {
+    public Control(Long ID, String entry, String exit, Float daySalary, Integer index, Employee employee) {
         this.ID = ID;
         this.entry = entry;
         this.exit = exit;
@@ -20,7 +20,7 @@ public class Control {
         this.employee = employee;
     }
 
-    public Control(Double ID, String entry, String exit, Float daySalary) {
+    public Control(Long ID, String entry, String exit, Float daySalary) {
         this.ID = ID;
         this.entry = entry;
         this.exit = exit;
@@ -28,11 +28,11 @@ public class Control {
         this.index = null;
     }
 
-    public Double getID() {
+    public Long getID() {
         return ID;
     }
 
-    public void setID(Double ID) {
+    public void setID(Long ID) {
         this.ID = ID;
     }
 

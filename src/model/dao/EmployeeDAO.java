@@ -9,7 +9,7 @@ public interface EmployeeDAO {
     void insert(Employee obj);
     void update(Employee obj);
     void delete(Integer id);
-    List<Employee> findById(Integer id);
-    List<Employee> findByName(Integer id);
+    Employee findById(Integer id);
+    Employee findByName(String id);
     List<Employee> findAll();
 }

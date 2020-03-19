@@ -4,37 +4,35 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class Employee implements Serializable {
-    private Integer id;
+    private Long id;
     private String name;
     private String lastName;
+    private Double CPF;
     private String email;
-    private Long CPF;
     private Double salaryHour;
     private Integer weeklyHour;
+    private Double controlID;
 
     private Department department;
 
-    public Employee(Integer id, String name, String lastName, String email, Long CPF, Double salaryHour,
-                    Integer weeklyHour, Department department) {
+    public Employee(Long id, String name, String lastName, Double CPF, String email, Double salaryHour,
+                    Integer weeklyHour, Department department, Double controlID) {
         this.id = id;
         this.name = name;
         this.lastName = lastName;
-        this.email = email;
         this.CPF = CPF;
+        this.email = email;
         this.salaryHour = salaryHour;
         this.weeklyHour = weeklyHour;
+        this.controlID = controlID;
         this.department = department;
     }
 
-    public Employee() {
-
-    }
-
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -54,20 +52,20 @@ public class Employee implements Serializable {
         this.lastName = lastName;
     }
 
+    public Double getCPF() {
+        return CPF;
+    }
+
+    public void setCPF(Double CPF) {
+        this.CPF = CPF;
+    }
+
     public String getEmail() {
         return email;
     }
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public Long getCPF() {
-        return CPF;
-    }
-
-    public void setCPF(Long CPF) {
-        this.CPF = CPF;
     }
 
     public Double getSalaryHour() {
@@ -86,6 +84,14 @@ public class Employee implements Serializable {
         this.weeklyHour = weeklyHour;
     }
 
+    public Double getControlID() {
+        return controlID;
+    }
+
+    public void setControlID(Double controlID) {
+        this.controlID = controlID;
+    }
+
     public Department getDepartment() {
         return department;
     }
@@ -93,7 +99,6 @@ public class Employee implements Serializable {
     public void setDepartment(Department department) {
         this.department = department;
     }
-
 
     @Override
     public boolean equals(Object o) {
@@ -110,14 +115,15 @@ public class Employee implements Serializable {
 
     @Override
     public String toString() {
-        return "Employee{" +
+        return "\nEmployee{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
                 ", CPF=" + CPF +
+                ", email='" + email + '\'' +
                 ", salaryHour=" + salaryHour +
                 ", weeklyHour=" + weeklyHour +
+                ", controlID=" + controlID +
                 ", department=" + department +
                 '}';
     }
