@@ -9,7 +9,6 @@ import model.entities.Employee;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.*;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class ControlDaoJDBC implements ControlDAO {
@@ -26,7 +25,6 @@ public class ControlDaoJDBC implements ControlDAO {
         boolean exist = false;
         int i = 0;
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<Control> temp = findId(obj.getID());
 
         for (Control cont : temp) {
@@ -158,7 +156,6 @@ public class ControlDaoJDBC implements ControlDAO {
     }
 
     //----------------------------------------------------------------//
-
 
     private void insert(@NotNull Control obj) {
         PreparedStatement st = null;

@@ -1,7 +1,5 @@
 package model.entities;
 
-import java.util.Date;
-
 public class Control {
     private Long ID;
     private String entry;

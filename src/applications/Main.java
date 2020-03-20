@@ -3,6 +3,7 @@ package applications;
 import db.DB;
 import db.DBException;
 import model.dao.ControlDAO;
+import model.dao.DepartmentDAO;
 import model.dao.EmployeeDAO;
 import model.dao.impl.DaoFactory;
 import model.entities.Control;
@@ -70,13 +71,21 @@ public class Main {
 
 */
 
-        ControlDAO cont = DaoFactory.newControlDAO();
+        /*ControlDAO cont = DaoFactory.newControlDAO();
 
         Control con4 = new Control(40577312L,
                 new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()),
                 new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 
-        cont.cardUpdate(con4);
+        cont.cardUpdate(con4);*/
+
+        DepartmentDAO dep = DaoFactory.newDepartmentDAO();
+
+        dep.update(new Department(1, "Coders"));
+
+        dep.delete(3);
+
+        System.out.print(dep.findAll());
 
     }
 

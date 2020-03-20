@@ -2,13 +2,15 @@ package model.dao.impl;
 
 import db.DB;
 import db.DBException;
-import model.dao.ControlDAO;
 import model.dao.EmployeeDAO;
 import model.entities.Department;
 import model.entities.Employee;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class EmployeeDaoJDBC implements EmployeeDAO {
 
@@ -23,7 +25,7 @@ public class EmployeeDaoJDBC implements EmployeeDAO {
         PreparedStatement st = null;
 
         try {
-            st = conn.prepareStatement("INSERT INTO DataBase.Employee "
+            st = conn.prepareStatement("INSERT INTO `DataBase`.`Employee` "
                             + "(ID, Name, LastName, CPF, Email, SalaryHour, WeeklyHour, DepartmentID, ControlID) "
                             + "values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
@@ -81,7 +83,7 @@ public class EmployeeDaoJDBC implements EmployeeDAO {
         PreparedStatement st = null;
 
         try {
-            st = conn.prepareStatement("DELETE FROM `DataBase`.`Employee` WHERE (`ID` =?)");
+            st = conn.prepareStatement("DELETE FROM `DataBase`.`Employee` WHERE (`ID` = ?)");
 
             st.setLong(1, id);
             ControlDaoJDBC temp = new ControlDaoJDBC(conn);
@@ -122,7 +124,6 @@ public class EmployeeDaoJDBC implements EmployeeDAO {
 
     @Override
     public Employee findByName(String name, String lastName) {
-        Employee temp = null;
         PreparedStatement st = null;
         ResultSet rs = null;
 
@@ -148,7 +149,48 @@ public class EmployeeDaoJDBC implements EmployeeDAO {
 
     @Override
     public List<Employee> findAll() {
-        return null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+
+        try {
+            st = conn.prepareStatement("SELECT `Employee`.*, `Department`.`DepName` "
+                    + "FROM `DataBase`.`Employee` "
+                    + "INNER JOIN `DataBase`.`Department` ON `Employee`.`DepartmentID` = `Department`.`ID` ");
+
+            rs = st.executeQuery();
+
+            List<Employee> list = new ArrayList<>();
+            Map<Integer, Department> D_map = new HashMap<>();
+
+            while (rs.next()){
+                Department dep = D_map.get(rs.getInt("DepartmentID"));
+
+                if (dep == null) {
+                    dep = new Department(rs.getInt("DepartmentID"), rs.getString("DepName"));
+                    D_map.put(rs.getInt("DepartmentID"), dep);
+                }
+
+                Employee emp = new Employee(rs.getLong("ID"),
+                        rs.getString("Name"),
+                        rs.getString("LastName"),
+                        rs.getLong("CPF"),
+                        rs.getString("Email"),
+                        rs.getDouble("SalaryHour"),
+                        rs.getInt("WeeklyHour"),
+                        dep,
+                        rs.getLong("ControlID"));
+
+                list.add(emp);
+            }
+
+            return list;
+
+        } catch (SQLException e) {
+            throw new DBException(e.getMessage());
+        } finally {
+            DB.closeRs(rs);
+            DB.closeSt(st);
+        }
     }
 
     private Employee instantiateEmployee (ResultSet rs ) throws SQLException {
