@@ -9,6 +9,7 @@ import model.entities.Employee;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class ControlDaoJDBC implements ControlDAO {
@@ -21,12 +22,31 @@ public class ControlDaoJDBC implements ControlDAO {
 
     @Override
     public void cardUpdate(@NotNull Control obj){
-        boolean i = false;
+        Control control = null;
+        boolean exist = false;
+        int i = 0;
 
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<Control> temp = findId(obj.getID());
 
-        for (Control cont : temp) i = cont.getExit().equals("0001-01-01 00:00:00");
-        if (i) update(obj); else insert(obj);
+        for (Control cont : temp) {
+            if (cont.getExit().equals("0001-01-01 00:00:00")){
+                exist = cont.getExit().equals("0001-01-01 00:00:00");
+                control = temp.get(i);
+            } i++;
+        }
+
+        if (exist) {
+            EmployeeDaoJDBC emp = new EmployeeDaoJDBC(conn);
+
+            if (control.getEntry().split(" ")[0].equals(obj.getExit().split(" ")[0])){
+                double in = time(control.getEntry().split(" ")[1].split(":"));
+                double out = time(obj.getExit().split(" ")[1].split(":"));
+
+                obj.setDaySalary((out - in) * emp.findById(control.getID()).getSalaryHour());
+                update(obj);
+            } else throw new DBException("Incompatible date");
+        } else insert(obj);
     }
 
     /**
@@ -177,7 +197,7 @@ public class ControlDaoJDBC implements ControlDAO {
                     + "WHERE `Control`.`Exit` = '0001-01-01 00:00:00' AND `Control`.`ID` = ?;");
 
             st.setString(1, obj.getExit());
-            st.setFloat(2, obj.getDaySalary());
+            st.setDouble(2, obj.getDaySalary());
             st.setDouble(3, obj.getID());
 
             st.executeUpdate();
@@ -208,8 +228,8 @@ public class ControlDaoJDBC implements ControlDAO {
             while (rs.next()) {
                 Control control = new Control(rs.getLong("ID"),
                         rs.getString("Entry"),
-                        rs.getString("Exit"),
-                        rs.getFloat("DaySalary"));
+                        rs.getString("Exit"));
+                control.setDaySalary(rs.getDouble("DaySalary"));
 
                 list.add(control);
             }
@@ -289,7 +309,7 @@ public class ControlDaoJDBC implements ControlDAO {
             Control control = new Control(rs.getLong("ID"),
                     rs.getString("Entry"),
                     rs.getString("Exit"),
-                    rs.getFloat("DaySalary"),
+                    rs.getDouble("DaySalary"),
                     rs.getInt("Index"),
                     emp);
 
@@ -323,6 +343,15 @@ public class ControlDaoJDBC implements ControlDAO {
             default:
                 return std + "WHERE DATE(`Control`.`Entry`) = ? ";
         }
+    }
+
+    private double time (String[] data){
+        int hour = Integer.parseInt(data[0]);
+        int minute = Integer.parseInt(data[1]);
+        int second = Integer.parseInt(data[2]);
+
+
+        return (hour*60*60 + minute*60 + second)/3600.0;
     }
 
 }

@@ -6,12 +6,12 @@ public class Control {
     private Long ID;
     private String entry;
     private String exit;
-    private Float daySalary;
+    private Double daySalary;
     private Integer index;
 
     private Employee employee;
 
-    public Control(Long ID, String entry, String exit, Float daySalary, Integer index, Employee employee) {
+    public Control(Long ID, String entry, String exit, Double daySalary, Integer index, Employee employee) {
         this.ID = ID;
         this.entry = entry;
         this.exit = exit;
@@ -20,11 +20,11 @@ public class Control {
         this.employee = employee;
     }
 
-    public Control(Long ID, String entry, String exit, Float daySalary) {
+    public Control(Long ID, String entry, String exit) {
         this.ID = ID;
         this.entry = entry;
         this.exit = exit;
-        this.daySalary = daySalary;
+        this.daySalary = 0d;
         this.index = null;
     }
 
@@ -52,11 +52,11 @@ public class Control {
         this.exit = exit;
     }
 
-    public Float getDaySalary() {
+    public Double getDaySalary() {
         return daySalary;
     }
 
-    public void setDaySalary(Float daySalary) {
+    public void setDaySalary(Double daySalary) {
         this.daySalary = daySalary;
     }
 
