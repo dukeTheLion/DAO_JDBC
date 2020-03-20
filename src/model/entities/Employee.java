@@ -7,16 +7,16 @@ public class Employee implements Serializable {
     private Long id;
     private String name;
     private String lastName;
-    private Double CPF;
+    private Long CPF;
     private String email;
     private Double salaryHour;
     private Integer weeklyHour;
-    private Double controlID;
+    private Long controlID;
 
     private Department department;
 
-    public Employee(Long id, String name, String lastName, Double CPF, String email, Double salaryHour,
-                    Integer weeklyHour, Department department, Double controlID) {
+    public Employee(Long id, String name, String lastName, Long CPF, String email, Double salaryHour,
+                    Integer weeklyHour, Department department, Long controlID) {
         this.id = id;
         this.name = name;
         this.lastName = lastName;
@@ -52,11 +52,11 @@ public class Employee implements Serializable {
         this.lastName = lastName;
     }
 
-    public Double getCPF() {
+    public Long getCPF() {
         return CPF;
     }
 
-    public void setCPF(Double CPF) {
+    public void setCPF(Long CPF) {
         this.CPF = CPF;
     }
 
@@ -84,11 +84,11 @@ public class Employee implements Serializable {
         this.weeklyHour = weeklyHour;
     }
 
-    public Double getControlID() {
+    public Long getControlID() {
         return controlID;
     }
 
-    public void setControlID(Double controlID) {
+    public void setControlID(Long controlID) {
         this.controlID = controlID;
     }
 

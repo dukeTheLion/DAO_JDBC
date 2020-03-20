@@ -2,14 +2,12 @@ package model.dao.impl;
 
 import db.DB;
 import db.DBException;
+import model.dao.ControlDAO;
 import model.dao.EmployeeDAO;
 import model.entities.Department;
 import model.entities.Employee;
-import org.jetbrains.annotations.NotNull;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class EmployeeDaoJDBC implements EmployeeDAO {
@@ -32,12 +30,12 @@ public class EmployeeDaoJDBC implements EmployeeDAO {
             st.setLong(1, obj.getId());
             st.setString(2, obj.getName());
             st.setString(3, obj.getLastName());
-            st.setDouble(4, obj.getCPF());
+            st.setLong(4, obj.getCPF());
             st.setString(5, obj.getEmail());
             st.setDouble(6, obj.getSalaryHour());
             st.setInt(7, obj.getWeeklyHour());
             st.setInt(8, obj.getDepartment().getId());
-            st.setDouble(9, obj.getControlID());
+            st.setLong(9, obj.getControlID());
 
             st.executeUpdate();
 
@@ -60,12 +58,12 @@ public class EmployeeDaoJDBC implements EmployeeDAO {
 
             st.setString(1, obj.getName());
             st.setString(2, obj.getLastName());
-            st.setDouble(3, obj.getCPF());
+            st.setLong(3, obj.getCPF());
             st.setString(4, obj.getEmail());
             st.setDouble(5, obj.getSalaryHour());
             st.setInt(6, obj.getWeeklyHour());
             st.setInt(7, obj.getDepartment().getId());
-            st.setDouble(8, obj.getControlID());
+            st.setLong(8, obj.getControlID());
 
             st.setLong(9, obj.getId());
 
@@ -79,13 +77,27 @@ public class EmployeeDaoJDBC implements EmployeeDAO {
     }
 
     @Override
-    public void delete(Integer id) {
+    public void delete(Long id) {
+        PreparedStatement st = null;
+
+        try {
+            st = conn.prepareStatement("DELETE FROM `DataBase`.`Employee` WHERE (`ID` =?)");
+
+            st.setLong(1, id);
+            ControlDaoJDBC temp = new ControlDaoJDBC(conn);
+            temp.delete(id);
+            st.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new DBException(e.getMessage());
+        } finally {
+            DB.closeSt(st);
+        }
 
     }
 
     @Override
-    public Employee findById(Integer id) {
-        Employee temp = null;
+    public Employee findById(Long id) {
         PreparedStatement st = null;
         ResultSet rs = null;
 
@@ -95,21 +107,10 @@ public class EmployeeDaoJDBC implements EmployeeDAO {
                     "INNER JOIN `DataBase`.`Department` ON `Employee`.`DepartmentID` = `Department`.`ID` " +
                     "WHERE `Employee`.`ID` = ?");
 
-            st.setInt(1, id);
+            st.setLong(1, id);
             rs = st.executeQuery();
 
-            if (rs.next()){
-                temp = new Employee(rs.getLong("ID"),
-                        rs.getString("Name"),
-                        rs.getString("LastName"),
-                        rs.getDouble("CPF"),
-                        rs.getString("Email"),
-                        rs.getDouble("SalaryHour"),
-                        rs.getInt("WeeklyHour"),
-                        new Department(rs.getInt("DepartmentID"), rs.getString("DepName")),
-                        rs.getDouble("ControlID"));
-            }
-            return temp;
+            return instantiateEmployee(rs);
 
         }catch (SQLException e) {
             throw new DBException(e.getMessage());
@@ -120,12 +121,49 @@ public class EmployeeDaoJDBC implements EmployeeDAO {
     }
 
     @Override
-    public Employee findByName(String id) {
-        return null;
+    public Employee findByName(String name, String lastName) {
+        Employee temp = null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+
+        try {
+            st = conn.prepareStatement("SELECT `Employee`.*, `Department`.`DepName` "
+                    + "FROM `DataBase`.`Employee` "
+                    + "INNER JOIN `DataBase`.`Department` ON `Employee`.`DepartmentID` = `Department`.`ID` "
+                    + "WHERE `Employee`.`Name` = ? AND `Employee`.`LastName` = ?");
+
+            st.setString(1, name);
+            st.setString(2, lastName);
+            rs = st.executeQuery();
+
+            return instantiateEmployee(rs);
+
+        }catch (SQLException e) {
+            throw new DBException(e.getMessage());
+        } finally {
+            DB.closeRs(rs);
+            DB.closeSt(st);
+        }
     }
 
     @Override
     public List<Employee> findAll() {
+        return null;
+    }
+
+    private Employee instantiateEmployee (ResultSet rs ) throws SQLException {
+        if (rs.next()){
+            return new Employee(rs.getLong("ID"),
+                    rs.getString("Name"),
+                    rs.getString("LastName"),
+                    rs.getLong("CPF"),
+                    rs.getString("Email"),
+                    rs.getDouble("SalaryHour"),
+                    rs.getInt("WeeklyHour"),
+                    new Department(rs.getInt("DepartmentID"), rs.getString("DepName")),
+                    rs.getLong("ControlID"));
+        }
+
         return null;
     }
 
