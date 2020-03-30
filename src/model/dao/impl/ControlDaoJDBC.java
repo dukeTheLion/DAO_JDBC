@@ -3,6 +3,7 @@ package model.dao.impl;
 import db.DB;
 import db.DBException;
 import model.dao.ControlDAO;
+import model.dao.EmployeeDAO;
 import model.entities.Control;
 import model.entities.Department;
 import model.entities.Employee;
@@ -35,7 +36,7 @@ public class ControlDaoJDBC implements ControlDAO {
         }
 
         if (exist) {
-            EmployeeDaoJDBC emp = new EmployeeDaoJDBC(conn);
+            EmployeeDAO emp = DaoFactory.newEmployeeDAO();
 
             if (control.getEntry().split(" ")[0].equals(obj.getExit().split(" ")[0])){
                 double in = time(control.getEntry().split(" ")[1].split(":"));
@@ -45,6 +46,43 @@ public class ControlDaoJDBC implements ControlDAO {
                 update(obj);
             } else throw new DBException("Incompatible date");
         } else insert(obj);
+    }
+
+    @Override
+    public Double monthSalary(String name, String lastName, Integer month) {
+        EmployeeDAO obj = DaoFactory.newEmployeeDAO();
+        long id = obj.findByName(name, lastName).getId();
+
+        return monthSalary(id, month);
+    }
+
+    @Override
+    public Double monthSalary(Long id, Integer month) {
+        double salary = 0d;
+
+        PreparedStatement st = null;
+        ResultSet rs = null;
+
+        try {
+            st = conn.prepareStatement("SELECT `Control`.`DaySalary` "
+                            + "FROM `DataBase`.`Control` "
+                            + "WHERE (MONTH(`Control`.`Entry`) = ?) AND `Control`.`ID` = ?");
+
+            st.setInt(1, month);
+            st.setLong(2, id);
+            rs = st.executeQuery();
+
+            while (rs.next()){
+                salary += rs.getDouble("DaySalary");
+            }
+
+            return salary;
+        } catch (SQLException e) {
+            throw new DBException(e.getMessage());
+        } finally {
+            DB.closeRs(rs);
+            DB.closeSt(st);
+        }
     }
 
     /**

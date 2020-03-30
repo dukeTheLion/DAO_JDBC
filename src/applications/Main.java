@@ -2,6 +2,7 @@ package applications;
 
 import db.DB;
 import db.DBException;
+import embedded.entities.Arduino;
 import model.dao.ControlDAO;
 import model.dao.DepartmentDAO;
 import model.dao.EmployeeDAO;
@@ -16,14 +17,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class Main {
 
     public static void main(String[] args) throws ParseException {
+
+        Locale.setDefault(Locale.US);
         /*
         ControlDAO empDao = DaoFactory.newControlDAO();
 
@@ -79,14 +79,15 @@ public class Main {
 
         cont.cardUpdate(con4);*/
 
-        DepartmentDAO dep = DaoFactory.newDepartmentDAO();
+        ControlDAO cont = DaoFactory.newControlDAO();
 
-        dep.update(new Department(1, "Coders"));
+        for (int i = 0; i < 4; i++) {
+            cont.cardUpdate(new Control(new Arduino().getCardId(),
+                    new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()),
+                    new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())));
+        }
 
-        dep.delete(3);
-
-        System.out.print(dep.findAll());
-
+        System.exit(0);
     }
 
 }
