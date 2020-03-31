@@ -1,5 +1,6 @@
 package embedded.conn;
 
+import gnu.io.CommPort;
 import gnu.io.CommPortIdentifier;
 import gnu.io.NoSuchPortException;
 import gnu.io.SerialPort;
@@ -17,6 +18,7 @@ public class Conn {
     private String portCOM;
     private BufferedReader reader;
     private InputStreamReader isr;
+    private BufferedReader bufferedReader = null;
 
     SerialPort port;
 
@@ -34,27 +36,30 @@ public class Conn {
 
     private void initialize() {
         try {
-            CommPortIdentifier portId = null;
-            try {
-                portId = CommPortIdentifier.getPortIdentifier(this.portCOM);
-            } catch (NoSuchPortException e) {
-                JOptionPane.showMessageDialog(null, "Porta COM não encontrada.",
-                        "Porta COM", JOptionPane.PLAIN_MESSAGE);
+            CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(this.portCOM);;
+            if (portIdentifier.isCurrentlyOwned()){
+                System.out.print("Error");
+            } else {
+                CommPort portId = portIdentifier.open(this.portCOM, this.tax);
+
+                if (portId instanceof SerialPort){
+
+                    port = (SerialPort) portId;
+                    serialIn = port.getInputStream();
+                    port.setSerialPortParams(this.tax,
+                            SerialPort.DATABITS_8,
+                            SerialPort.STOPBITS_1,
+                            SerialPort.PARITY_NONE);
+
+                    isr = new InputStreamReader(serialIn);
+                }
             }
-            assert portId != null;
-            port = (SerialPort) portId.open("Conn", this.tax);
-            serialIn = port.getInputStream();
-            isr = new InputStreamReader(serialIn);
-            port.setSerialPortParams(this.tax,
-                    SerialPort.DATABITS_8,
-                    SerialPort.STOPBITS_1,
-                    SerialPort.PARITY_NONE);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void closeIn() {
+    public void closeIn() {
         try {
             serialIn.close();
             reader.close();
@@ -68,15 +73,13 @@ public class Conn {
     public String receiveData() {
         String hex = null;
 
-        reader = new BufferedReader(isr);
+        if (bufferedReader == null) reader = new BufferedReader(isr);
 
         try {
             hex = reader.readLine();
             System.out.println(hex);
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            closeIn();
         }
 
         return hex;

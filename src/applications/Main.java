@@ -80,14 +80,18 @@ public class Main {
         cont.cardUpdate(con4);*/
 
         ControlDAO cont = DaoFactory.newControlDAO();
+        //Arduino arduino = new Arduino();
 
-        for (int i = 0; i < 4; i++) {
-            cont.cardUpdate(new Control(new Arduino().getCardId(),
-                    new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()),
-                    new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())));
-        }
+        //for (int i = 0; i < 4; i++) {
+        //    cont.cardUpdate(new Control(arduino.getCardId(),
+        //            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()),
+        //            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())));
+        //}
+        //arduino.getConn().closeIn();
+        //System.exit(0);
 
-        System.exit(0);
+
+        System.out.printf("R$%010.2f", (cont.monthSalary(40577313L, 3)));
     }
 
 }

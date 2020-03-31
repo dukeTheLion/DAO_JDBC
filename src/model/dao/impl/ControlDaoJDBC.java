@@ -101,7 +101,7 @@ public class ControlDaoJDBC implements ControlDAO {
                     + "FROM `DataBase`.`Employee` "
                     + "INNER JOIN `DataBase`.`Department` ON `Employee`.`DepartmentID` = `Department`.`ID` "
                     + "INNER JOIN `DataBase`.`Control` ON `Employee`.`ControlID` = `Control`.ID "
-                    + "WHERE Employee.ID = ?");
+                    + "WHERE `Employee`.`ID` = ?");
 
             st.setLong(1, id);
             rs = st.executeQuery();

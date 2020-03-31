@@ -9,6 +9,10 @@ public class Arduino {
         return Converter(conn.receiveData());
     }
 
+    public Conn getConn() {
+        return conn;
+    }
+
     private static long Converter(String hex){
         String digits = "0123456789ABCDEF";
         hex = hex.toUpperCase();
